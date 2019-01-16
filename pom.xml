@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Package details for maven repositories -->
+	<groupId>uk.ac.ljmu.fet.cs.csw</groupId>
+	<artifactId>CompetitiveMinesweeper</artifactId>
+	<version>0.9</version>
+	<packaging>jar</packaging>
+
+	<!-- additional metadata -->
+	<name>Competitive Minesweeper</name>
+	<description>A mine sweeper allowing two artificial players to compete</description>
+	<url>https://github.com/kecskemeti/CompetitiveMinesweeper</url>
+	<organization>
+		<name>Liverpool John Moores University, Department of Computer Science</name>
+		<url>https://www.ljmu.ac.uk/about-us/faculties/faculty-of-engineering-and-technology/department-of-computer-science</url>
+	</organization>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- Licensing information -->
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL) version 3.0</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<!-- software dependencies to allow compilation and testing -->
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<!-- Build configuration -->
+	<build>
+		<plugins>
+			<plugin>
+				<!-- To work with this code minimum Java 1.8 is needed -->
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+		<resources>
+			<!-- Info to be included in the JAR file if the maven project is packaged/installed -->
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<!-- Our application's icon -->
+					<include>MineSweeperIcon.png</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${basedir}</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>COPYING</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+</project>
