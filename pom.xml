@@ -54,6 +54,18 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<!-- Make sure we can generate javadocs from the sources -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<reportOutputDirectory>${basedir}/docs</reportOutputDirectory>
+					<destDir>.</destDir>
+					<show>private</show>
+				</configuration>
+			</plugin>
+
 		</plugins>
 		<resources>
 			<!-- Info to be included in the JAR file if the maven project is packaged/installed -->

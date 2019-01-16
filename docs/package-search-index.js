@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base"},{"l":"uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers"},{"l":"uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui"},{"l":"uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces"}]

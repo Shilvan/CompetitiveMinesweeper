@@ -32,14 +32,14 @@ import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SingleGamePanel;
  * The interface each AI has to implement in order to allow it to take part in a
  * competition. Implementors of this interface can be launched by a configurator
  * in their dedicated threads. For details see
- * {@link MineSweeper#launchCompetitor()} for details. Notice that this
- * interface extends the {@link Runnable} interface. Which means an extra run
- * method also has to be implemented in it. The {@link Runnable#run()} method
- * should provide the AI's main functionality (i.e., exploration). To understand
- * how simple exploration of the map would work, have a look at the
- * {@link SimpleLineByLineSolver}. To simpify the implementation of this
- * interface it is a good idea to start it by extending the class
- * {@link AbstractSolver}.
+ * {@link MineSweeper#launchCompetitor(Class, MineMap, boolean)} for details.
+ * Notice that this interface extends the {@link Runnable} interface. Which
+ * means an extra run method also has to be implemented in it. The
+ * {@link Runnable#run()} method should provide the AI's main functionality
+ * (i.e., exploration). To understand how simple exploration of the map would
+ * work, have a look at the {@link SimpleLineByLineSolver}. To simpify the
+ * implementation of this interface it is a good idea to start it by extending
+ * the class {@link AbstractSolver}.
  * 
  * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
  *         Moores University, (c) 2019"
