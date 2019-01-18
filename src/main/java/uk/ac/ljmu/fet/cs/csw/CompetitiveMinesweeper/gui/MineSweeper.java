@@ -284,16 +284,38 @@ public class MineSweeper extends JFrame implements ActionListener {
 	private void launchCompetitor(Class<? extends GameSolverThread> comp, MineMap base, boolean shift)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException {
+		launchCompetitor(comp, base, shift ? 1 : 0, 0);
+	}
+
+	/**
+	 * Clones a map, instantiates an AI and configures its GUI, launches the AI's
+	 * solver thread, then finally it makes the configuration window disappear. If
+	 * there are issues with instantiating the solver class, there could be all
+	 * kinds of exceptions thrown.
+	 * 
+	 * @param comp      The class of the AI solver.
+	 * @param base      The base map to solve
+	 * @param pushright how many windows should we go to the right
+	 * @param pushdown  how many windows should we go towards the bottom
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
+	void launchCompetitor(Class<? extends GameSolverThread> comp, MineMap base, int pushright, int pushdown)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
 		GameSolverThread gst = comp.getConstructor().newInstance();
 		MineMap myMap = gst instanceof HumanSolver ? new MineMap(base, 0) : new MineMap(base);
 		gst.sendMap(myMap);
-		SingleGamePanel gui = new SingleGamePanel(this, !shift, myMap, comp.getSimpleName() + " solving this window");
+		SingleGamePanel gui = new SingleGamePanel(this, pushright == 0 && pushdown == 0, myMap,
+				comp.getSimpleName() + " solving this window", true);
 		currentGuis.add(gui);
-		if (shift) {
-			Point oldLoc = gui.getLocation();
-			Dimension size = gui.getSize();
-			gui.setLocation(oldLoc.x + size.width, oldLoc.y);
-		}
+		Point oldLoc = gui.getLocation();
+		Dimension size = gui.getSize();
+		gui.setLocation(oldLoc.x + size.width * pushright, oldLoc.y + size.height * pushdown);
 		gst.sendGUI(gui);
 		new Thread(gst).start();
 		setVisible(false);

@@ -93,6 +93,12 @@ public class SingleGamePanel extends JFrame implements Runnable, ActionListener,
 	public static final String lost = "Game Lost!";
 	public static final String ongoing = "Game still going!";
 
+	/**
+	 * Defines the minimum height/width of the squares that represent the spots on
+	 * the gui
+	 */
+	public static final int minSpotDimension = 15;
+
 	// Main areas of the game window
 	private final JPanel stats, playArea, configReturn;
 	// Label to show the status messages
@@ -128,9 +134,11 @@ public class SingleGamePanel extends JFrame implements Runnable, ActionListener,
 	 * @param allowParentControl Are we allowed to control the configurator?
 	 * @param toMonitor          The map to visualise
 	 * @param title              The title of this window
+	 * @param scale              <i>true</i> enable automatically scaling the spots,
+	 *                           <i>false</i> if this feature should be disabled
 	 */
 	public SingleGamePanel(final MineSweeper p, final boolean allowParentControl, final MineMap toMonitor,
-			final String title) {
+			final String title, boolean scale) {
 		super(title);
 		if (allowParentControl) {
 			parent = p;
@@ -146,7 +154,8 @@ public class SingleGamePanel extends JFrame implements Runnable, ActionListener,
 		playArea.setLayout(new GridLayout(toMonitor.rows, toMonitor.cols, 0, 0));
 		// Spot size dynamically set so the window is reasonably big when the grid is
 		// small, but when the grid is big we will limit the spot size to 15 pixels
-		int spotSize = Math.max(15, 100 - Math.max(toMonitor.rows, toMonitor.cols) * 4 + 10);
+		int spotSize = scale ? Math.max(minSpotDimension, 100 - Math.max(toMonitor.rows, toMonitor.cols) * 4 + 10)
+				: minSpotDimension;
 		for (int rc = 0; rc < toMonitor.rows; rc++) {
 			ArrayList<FlashableJLabel> alterableRow = new ArrayList<>();
 			for (int cc = 0; cc < toMonitor.cols; cc++) {
