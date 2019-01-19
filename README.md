@@ -1,4 +1,7 @@
 # CompetitiveMinesweeper
+<p align="center">
+  <img src="https://raw.githubusercontent.com/kecskemeti/CompetitiveMinesweeper/master/src/main/resources/MineSweeperIcon.png"/>
+</p>
 
 ## Overview
 This is a simple, java based minesweeper game created to help some basic "AI" development on a competitive way. The game also offers a chance to play the randomly generated minefields as a human (similarly to the classic game).
