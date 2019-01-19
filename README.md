@@ -10,11 +10,11 @@ Documentation website:
 https://kecskemeti.github.io/CompetitiveMinesweeper
 
 Licensing:
-GNU General Public License 3 and later
+[GNU General Public License 3 and later](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 ## Compilation & Installation
 
-Prerequisites: [Apache Maven 3.](http://maven.apache.org/), Java 8
+Prerequisites: [Apache Maven 3](http://maven.apache.org/), Java 8
 
 After cloning, run the following in the main dir of the checkout:
 
