@@ -48,8 +48,8 @@ public class SimpleLineByLineSolver extends AbstractSolver {
 		// Our main logic, this never really works unless there are no mines on the
 		// map... But this demonstrates how to scan through the entire grid. Note that
 		// this
-		for (int cc = 0; cc < myMap.cols; cc++) {
-			for (int rc = 0; rc < myMap.rows; rc++) {
+		for (int rc = 0; rc < myMap.rows; rc++) {
+			for (int cc = 0; cc < myMap.cols; cc++) {
 				// There is no need to try to pick further spots if the game has already ended.
 				// Note that it would be just as fine to pick the spots further as the pickASpot
 				// method would not really do any further operations once the game ended anyway.
