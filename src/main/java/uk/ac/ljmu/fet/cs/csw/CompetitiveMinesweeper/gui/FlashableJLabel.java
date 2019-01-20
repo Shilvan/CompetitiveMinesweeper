@@ -23,7 +23,7 @@
 package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui;
 
 import java.awt.Color;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.JLabel;
@@ -51,7 +51,7 @@ public class FlashableJLabel extends JLabel {
 	 * This executor allows queueing flashing threads so only one is doing its
 	 * flashing operations at a given time
 	 */
-	private final Executor ex = Executors.newSingleThreadExecutor();
+	private final ExecutorService ex = Executors.newSingleThreadExecutor();
 	/**
 	 * Used as to block access to inThread and expectedBackground while dealing with
 	 * flashing initialisation and background changes.
@@ -164,4 +164,7 @@ public class FlashableJLabel extends JLabel {
 		});
 	}
 
+	void terminateFlashing() {
+		ex.shutdown();
+	}
 }

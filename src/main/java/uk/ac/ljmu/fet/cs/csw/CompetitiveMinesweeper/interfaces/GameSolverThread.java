@@ -26,7 +26,7 @@ import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.AbstractSolver;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.SimpleLineByLineSolver;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.MineSweeper;
-import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SingleGamePanel;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SimpleGamePanel;
 
 /**
  * The interface each AI has to implement in order to allow it to take part in a
@@ -58,5 +58,5 @@ public interface GameSolverThread extends Runnable {
 	 * 
 	 * @param myVisualiser The GUI of our solver's map.
 	 */
-	void sendGUI(SingleGamePanel myVisualiser);
+	void sendGUI(SimpleGamePanel myVisualiser);
 }

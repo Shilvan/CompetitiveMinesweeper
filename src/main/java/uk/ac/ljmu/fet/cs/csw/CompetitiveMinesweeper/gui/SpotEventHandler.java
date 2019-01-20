@@ -50,7 +50,7 @@ public class SpotEventHandler implements MouseListener {
 	private final MineMap myMap;
 	/**
 	 * The label that is in the visual grid representation of the map. The grid is
-	 * created and maintained by {@link SingleGamePanel}.
+	 * created and maintained by {@link RestartableGamePanel}.
 	 */
 	private FlashableJLabel inGrid;
 	/**

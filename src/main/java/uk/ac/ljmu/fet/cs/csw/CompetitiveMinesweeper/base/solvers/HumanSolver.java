@@ -25,7 +25,7 @@ package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers;
 import java.util.List;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.FlashableJLabel;
-import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SingleGamePanel;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SimpleGamePanel;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SpotEventHandler;
 
 /**
@@ -43,7 +43,7 @@ public class HumanSolver extends AbstractSolver {
 	 * with the map.
 	 */
 	@Override
-	public void sendGUI(final SingleGamePanel myVisualiser) {
+	public void sendGUI(final SimpleGamePanel myVisualiser) {
 		super.sendGUI(myVisualiser);
 		// Adds a mouse listener for each grid item to handle mouse clicks and hover
 		// overs

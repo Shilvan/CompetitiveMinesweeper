@@ -23,7 +23,7 @@
 package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
-import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SingleGamePanel;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SimpleGamePanel;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
 /**
@@ -48,7 +48,7 @@ public abstract class AbstractSolver implements GameSolverThread {
 	 * that represent the spots on the grid). Can't be changed by subclasses of the
 	 * AbstractSolver. Instead it can be queried if they wish to do so.
 	 */
-	private SingleGamePanel myGUI = null;
+	private SimpleGamePanel myGUI = null;
 
 	/**
 	 * Subclasses can get the mine map to be solved via this method. This ensures
@@ -68,7 +68,7 @@ public abstract class AbstractSolver implements GameSolverThread {
 	 * 
 	 * @return the gui for the map's visualisation.
 	 */
-	protected SingleGamePanel getMyGUI() {
+	protected SimpleGamePanel getMyGUI() {
 		return myGUI;
 	}
 
@@ -101,7 +101,7 @@ public abstract class AbstractSolver implements GameSolverThread {
 	 * this method complains to the caller with an IllegalStateException.
 	 */
 	@Override
-	public void sendGUI(final SingleGamePanel myVisualiser) {
+	public void sendGUI(final SimpleGamePanel myVisualiser) {
 		if (myGUI != null) {
 			throw new IllegalStateException("We already received a GUI before...");
 		}
