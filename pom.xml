@@ -63,6 +63,7 @@
 					<reportOutputDirectory>${basedir}/docs</reportOutputDirectory>
 					<destDir>.</destDir>
 					<show>private</show>
+					<source>8</source>
 				</configuration>
 			</plugin>
 
