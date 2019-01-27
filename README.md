@@ -28,9 +28,9 @@ This command will download all other prerequisites for compilation and testing. 
 The installed simulator will be located in the default maven repository's (e.g., `~/.m2/repository`) following directory: 
 `uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/[VERSION]/CompetitiveMinesweeper-[VERSION].jar`
 
-Where `[VERSION]` stands for the currently installed version of the simulator.
+Where `[VERSION]` stands for the currently installed version of the game.
 
-The documentation for the simulator's java API will be generated in the following subfolder of the main dir of the checkout:
+The documentation for the CompetitiveMinesweeper's java API will be generated in the following subfolder of the main dir of the checkout:
 
 `docs`
 
@@ -58,5 +58,5 @@ If the game completes (because of the player exploding or completely exploring t
 ### How to add a new AI solver
 * Extend the class AbstractSolver
 * Make sure to create a run() method that attempts to solve the given [MineMap](https://kecskemeti.github.io/CompetitiveMinesweeper/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/MineMap.html). 
-* When the game is running, this method will be run in its own thread and the GUI will visualise the game while your AI tries to solve the MineMap. The GUI assumes your AI will eventually make the MineMap pronouncing the end of the game. If this is not the case please rework your AI. 
+* When the game is running, this method will be run in its own thread and the GUI will visualise the game while your AI tries to solve the MineMap. The GUI assumes your AI will eventually make the MineMap pronouncing the end of the game (i.e., the [isEnded method](https://kecskemeti.github.io/CompetitiveMinesweeper/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/MineMap.html#isEnded()) should eventually return true. If this is not the case please rework your AI. 
 * You are recommended to check out MineMap's api documentation for further details.
