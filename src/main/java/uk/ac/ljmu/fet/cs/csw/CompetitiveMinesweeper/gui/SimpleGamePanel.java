@@ -121,7 +121,6 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 		setIconImage(MineSweeper.mineswicon);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
 		// Prepare the playing grid
 		ArrayList<List<FlashableJLabel>> alterableField = new ArrayList<>();
 		playArea = new JPanel();
@@ -193,53 +192,60 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 	}
 
 	/**
+	 * This method updates all labels in the play area to show the state of the
+	 * map at the time when the method is called.
+	 */
+	private void refreshArea() {
+		for (int rc = 0; rc < toMonitor.rows; rc++) {
+			List<FlashableJLabel> currRow = field.get(rc);
+			for (int cc = 0; cc < toMonitor.cols; cc++) {
+				FlashableJLabel currLabel = currRow.get(cc);
+				ExploredSpot currSpot = toMonitor.getPos(rc, cc);
+				// this char will contain an unicode char code
+				// this char depends on what is the current spot
+				char toShowinSpot = 1;
+				switch (currSpot.type) {
+				case EXPLODED:
+					// A star sign
+					toShowinSpot = 0x2600;
+					ensureColour(currLabel, textColor, clearColor);
+					break;
+				case FLAG:
+					// A flag sign
+					toShowinSpot = 0x2691;
+					ensureColour(currLabel, flagColor, clearColor);
+					break;
+				case MINE:
+					System.err.println("A mine was in an explored spot, MineMap is broken!");
+					System.exit(1);
+				case SAFE:
+					// A number (if there are mines nearby) or a space (if there are no mines
+					// around)
+					toShowinSpot = currSpot.nearMineCount == 0 ? ' ' : (char) ('0' + currSpot.nearMineCount);
+					ensureColour(currLabel, textColor, clearColor);
+					break;
+				case UNEXPLORED:
+					// Space ...
+					toShowinSpot = ' ';
+					ensureColour(currLabel, textColor, inFogColor);
+					break;
+				}
+				String newText = "" + toShowinSpot;
+				if (!currLabel.getText().equals(newText)) {
+					currLabel.setText(newText);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Ensures the window contains the most up to date look of the MineMap.
 	 */
 	@Override
 	public void run() {
 		do {
 			// Refresh the play area
-			for (int rc = 0; rc < toMonitor.rows; rc++) {
-				List<FlashableJLabel> currRow = field.get(rc);
-				for (int cc = 0; cc < toMonitor.cols; cc++) {
-					FlashableJLabel currLabel = currRow.get(cc);
-					ExploredSpot currSpot = toMonitor.getPos(rc, cc);
-					// this char will contain an unicode char code
-					// this char depends on what is the current spot
-					char toShowinSpot = 1;
-					switch (currSpot.type) {
-					case EXPLODED:
-						// A star sign
-						toShowinSpot = 0x2600;
-						ensureColour(currLabel, textColor, clearColor);
-						break;
-					case FLAG:
-						// A flag sign
-						toShowinSpot = 0x2691;
-						ensureColour(currLabel, flagColor, clearColor);
-						break;
-					case MINE:
-						System.err.println("A mine was in an explored spot, MineMap is broken!");
-						System.exit(1);
-					case SAFE:
-						// A number (if there are mines nearby) or a space (if there are no mines
-						// around)
-						toShowinSpot = currSpot.nearMineCount == 0 ? ' ' : (char) ('0' + currSpot.nearMineCount);
-						ensureColour(currLabel, textColor, clearColor);
-						break;
-					case UNEXPLORED:
-						// Space ...
-						toShowinSpot = ' ';
-						ensureColour(currLabel, textColor, inFogColor);
-						break;
-					}
-					String newText = "" + toShowinSpot;
-					if (!currLabel.getText().equals(newText)) {
-						currLabel.setText(newText);
-					}
-				}
-			}
-
+			refreshArea();
 			// We can now flash the most recently picked/flagged item so the GUI can show
 			// the AI's operations. Note this does not show all the AI ops. It just shows
 			// the latest one when we reach this place in the code.
@@ -262,6 +268,10 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 
 			// If the game has not ended yet we will repeat this loop.
 		} while (!toMonitor.isEnded());
+
+		// Refresh the area the last time (as in there could have been updates to the map in
+		// the last 50 ms long sleep)
+		refreshArea();
 
 		if (toMonitor.isWon()) {
 			// If the game has been successful we will show a fancy spiral originating at
