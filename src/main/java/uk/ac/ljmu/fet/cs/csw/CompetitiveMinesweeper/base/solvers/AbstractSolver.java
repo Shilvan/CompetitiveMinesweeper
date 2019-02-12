@@ -51,6 +51,13 @@ public abstract class AbstractSolver implements GameSolverThread {
 	private SimpleGamePanel myGUI = null;
 
 	/**
+	 * Tells whether to allow calling the {@link #run()} method without setting the
+	 * GUI first. If true, the {@link #run()} method will not run without a sendGUI
+	 * method call first.
+	 */
+	private boolean requiresGUI = false;
+
+	/**
 	 * Subclasses can get the mine map to be solved via this method. This ensures
 	 * that subclasses cannot mistakenly forget about the map that they need to
 	 * solve.
@@ -77,7 +84,7 @@ public abstract class AbstractSolver implements GameSolverThread {
 	 */
 	@Override
 	public void run() {
-		if (myMap == null || myGUI == null) {
+		if (myMap == null || (requiresGUI && myGUI == null)) {
 			throw new IllegalStateException("Cannot start the solver before sending over the map&GUI");
 		}
 	}
@@ -106,6 +113,24 @@ public abstract class AbstractSolver implements GameSolverThread {
 			throw new IllegalStateException("We already received a GUI before...");
 		}
 		myGUI = myVisualiser;
+	}
+
+	/**
+	 * Solvers that does not depend on a GUI directly can disable for its checking
+	 * in the {@link #run()} method. This is intended for subclasses to call if they
+	 * wish to allow GUI less operations (useful for most AIs).
+	 * 
+	 * @param requiresGUI False if it is ok to start the run method without a gui
+	 *                    passed to the solver. True otherwise. The default value is
+	 *                    false, it does not have to be set.
+	 */
+	protected void setRequiresGUI(final boolean requiresGUI) {
+		this.requiresGUI = requiresGUI;
+	}
+
+	@Override
+	public boolean requiresGUI() {
+		return requiresGUI;
 	}
 
 }

@@ -59,4 +59,12 @@ public interface GameSolverThread extends Runnable {
 	 * @param myVisualiser The GUI of our solver's map.
 	 */
 	void sendGUI(SimpleGamePanel myVisualiser);
+
+	/**
+	 * Tells if the solver can function without a GUI passed.
+	 * 
+	 * @return true if there is a GUI needed for the operation of this solver. false
+	 *         otherwise.
+	 */
+	boolean requiresGUI();
 }

@@ -39,6 +39,13 @@ import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.SpotEventHandler;
 public class HumanSolver extends AbstractSolver {
 
 	/**
+	 * This constructor just makes sure the GUI is always present for this solver.
+	 */
+	public HumanSolver() {
+		setRequiresGUI(false);
+	}
+
+	/**
 	 * Receives the GUI that needs new event handlers to support more interaction
 	 * with the map.
 	 */
