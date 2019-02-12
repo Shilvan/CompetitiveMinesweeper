@@ -88,7 +88,7 @@ public class SingleSet implements Scorer {
 
 	@Override
 	public String toString() {
-		return "Set between " + solverOne.getName() + " and " + solverOne.getName()
+		return "Set between " + solverOne.getName() + " and " + solverTwo.getName()
 				+ (sumSubScoreOne < 0 ? ""
 						: (" scores: " + sumSubScoreOne + ":" + sumSubScoreTwo + " points: " + getPointsForTeamOne()
 								+ "/" + getPointsForTeamTwo()));

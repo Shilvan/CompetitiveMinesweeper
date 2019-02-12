@@ -92,7 +92,7 @@ public class SingleMatch implements Scorer {
 				GameSolverThread firstSolverInstance = solverOne.getConstructor().newInstance();
 				firstSolverInstance.sendMap(solverOneMap);
 				theTwoSolvers.add(firstSolverInstance);
-				GameSolverThread secondSolverInstance = solverOne.getConstructor().newInstance();
+				GameSolverThread secondSolverInstance = solverTwo.getConstructor().newInstance();
 				secondSolverInstance.sendMap(solverTwoMap);
 				theTwoSolvers.add(secondSolverInstance);
 				if (firstSolverInstance.requiresGUI() || secondSolverInstance.requiresGUI()) {
@@ -123,7 +123,7 @@ public class SingleMatch implements Scorer {
 					}
 					Thread.sleep(1);
 				}
-				Thread.sleep(5);
+				Thread.sleep(10);
 				for (int j = 0; j < 2; j++) {
 					if (runnerThreads.get(j).isAlive()) {
 						System.err.println(theTwoSolvers.get(j).getClass().getName()
@@ -144,7 +144,8 @@ public class SingleMatch implements Scorer {
 		}
 	}
 
-	private static int getCurrentScore(MineMap teamOne, long durOne, MineMap teamTwo, long durTwo) {
+	private static int getCurrentScore(final MineMap teamOne, final long durOne, final MineMap teamTwo,
+			final long durTwo) {
 		if (teamOne.isWon()) {
 			if (teamTwo.isWon()) {
 				return durOne > durTwo ? 90 : 80;
@@ -157,13 +158,14 @@ public class SingleMatch implements Scorer {
 			} else {
 				// Both teams lost
 				// Teams with more explored areas will get a higher score
-				int exploreComponent = (int) Math.max(40, 20 * ((double) teamOne.getExploredAreaSize())
-						/ (teamTwo.getExploredAreaSize() == 0 ? 1 : teamTwo.getExploredAreaSize()));
+				final double exOne = teamOne.getExploredAreaSize();
+				final double exTwo = teamTwo.getExploredAreaSize();
+				final int exploreComponent = exTwo == 0 ? 40 : (int) Math.min(40, 20 * exOne / exTwo);
+				final double correct = teamOne.getCorrectlyIdentifiedMineCount();
+				final double incorrect = teamOne.getInCorrectlyIdentifiedMineCount();
+
 				// Incorrectly identified mines are highly penalised
-				int flagComponent = (int) Math.max(20,
-						10 * ((double) teamOne.getCorrectlyIdentifiedMineCount())
-								/ (teamOne.getInCorrectlyIdentifiedMineCount() == 0 ? 1
-										: teamOne.getInCorrectlyIdentifiedMineCount() * 10));
+				final int flagComponent = incorrect == 0 ? 20 : (int) Math.min(20, 10 * (correct / (incorrect * 10)));
 				return exploreComponent + flagComponent;
 			}
 		}
