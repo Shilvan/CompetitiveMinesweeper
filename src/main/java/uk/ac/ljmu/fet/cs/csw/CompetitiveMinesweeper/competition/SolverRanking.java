@@ -24,20 +24,50 @@ package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.competition;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
+/**
+ * Allows to pair a solver class with its score and offers a comparator on the
+ * solver to allow easy sorting of solvers (i.e., to figure out who is the
+ * best).
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
 public class SolverRanking implements Comparable<SolverRanking> {
+	/**
+	 * The solver class that was ranked
+	 */
 	public final Class<? extends GameSolverThread> solver;
+	/**
+	 * The achieved score of the solver class in the competition it was taking part
+	 */
 	public final int score;
 
+	/**
+	 * Enables to fill in the two data members
+	 * 
+	 * @param solver the solver for which we record the score
+	 * @param score  the score the solver achieved in the particular competition
+	 */
 	public SolverRanking(Class<? extends GameSolverThread> solver, int score) {
 		this.solver = solver;
 		this.score = score;
 	}
 
+	/**
+	 * Enables sorting the solvers based on their achieved score. Note it reverses
+	 * typical comparator results (i.e., if something has a bigger score it tells it
+	 * has a smaller one). This makes sure sorting algorithms will list the best
+	 * scoring solvers first.
+	 */
 	@Override
 	public int compareTo(SolverRanking o) {
 		return -((Integer) score).compareTo(o.score);
 	}
 
+	/**
+	 * Simple text representation of the score and the solver. It is useful to print
+	 * out the ranking without a hassle.
+	 */
 	@Override
 	public String toString() {
 		return solver.getName() + " score: " + score;

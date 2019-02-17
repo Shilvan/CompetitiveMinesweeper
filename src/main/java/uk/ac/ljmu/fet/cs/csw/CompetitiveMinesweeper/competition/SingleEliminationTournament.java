@@ -28,6 +28,14 @@ import java.util.Random;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
+/**
+ * Offers an implementation of a single elimination tournament. For details see:
+ * <a href=
+ * "https://en.wikipedia.org/wiki/Single-elimination_tournament">wikipedia</a>.
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
 public class SingleEliminationTournament {
 
 	/**

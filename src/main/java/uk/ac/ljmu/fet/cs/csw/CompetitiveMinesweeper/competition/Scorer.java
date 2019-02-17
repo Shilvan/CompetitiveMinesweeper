@@ -22,9 +22,30 @@
  */
 package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.competition;
 
+/**
+ * One should implement this interface to offer scores about two teamed
+ * sets/matches.
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
 public interface Scorer {
+	/**
+	 * Queries the results of the first team
+	 * 
+	 * @return an integer score (the bigger the score is better). Note the
+	 *         particular range of values are to be determined by the particular
+	 *         implementation.
+	 */
 	public int getPointsForTeamOne();
 
+	/**
+	 * Queries the results of the second team
+	 * 
+	 * @return an integer score (the bigger the score is better). Note the
+	 *         particular range of values are to be determined by the particular
+	 *         implementation.
+	 */
 	public int getPointsForTeamTwo();
 
 }

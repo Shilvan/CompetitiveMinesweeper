@@ -26,10 +26,30 @@ import java.util.ArrayList;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
+/**
+ * Runs an unlimited size team competition with the solvers that are specified
+ * as command line parameters.
+ * 
+ * This is one of the main executables. If you don't have more than 8 solver
+ * implementations, it is recommended to run your competition with this
+ * executable.
+ * 
+ * <i>Note:</i> The solvers in the command line parameters must be specified as
+ * fully qualified class names (including package name). For example, the simple
+ * line by line solver should be referred as
+ * <i>uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.SimpleLineByLineSolver</i>
+ * on the command line. The referred class must be loadable by the same class
+ * loader that loaded the executable itself (i.e., it must be in the class
+ * path).
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
 public class RunCompetitionSingleTeam {
 	public static void main(String[] args) throws Exception {
 		TeamCompetition competition = new TeamCompetition(false);
-		ArrayList<Class<? extends GameSolverThread>> preList = RunCompetitionMultiPhase.parseCompetingClassNames(args, 3);
+		ArrayList<Class<? extends GameSolverThread>> preList = RunCompetitionMultiPhase.parseCompetingClassNames(args,
+				3);
 		// All competitors into a single team competition
 		for (Class<? extends GameSolverThread> cp : preList) {
 			competition.addToCompetitors(cp);

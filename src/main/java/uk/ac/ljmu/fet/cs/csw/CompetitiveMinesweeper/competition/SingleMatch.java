@@ -31,46 +31,98 @@ import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.MineSweeper;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
+/**
+ * Allows the arrangement of a single match between two solvers. To minimise the
+ * effect of luck, a single match is played on the same initially randomly
+ * generated map 5 times. The score of the solvers is determined based on their
+ * performance in all 5 attempts at the map.
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
 public class SingleMatch implements Scorer {
+	/**
+	 * The minimum number of rows in a particular match. When a match is set up the
+	 * base map will be generated with this in mind.
+	 */
 	public static final int minRows = 5;
+	/**
+	 * The maximum number of rows in a particular match. When a match is set up the
+	 * base map will be generated with this in mind.
+	 */
 	public static final int maxRows = 100;
+	/**
+	 * The minimum number of columns in a particular match. When a match is set up
+	 * the base map will be generated with this in mind.
+	 */
 	public static final int minCols = 5;
+	/**
+	 * The maximum number of columns in a particular match. When a match is set up
+	 * the base map will be generated with this in mind.
+	 */
 	public static final int maxCols = 100;
 
+	/**
+	 * The two solvers which take part in the match.
+	 */
 	public final Class<? extends GameSolverThread> solverOne, solverTwo;
+	/**
+	 * true if the {@link #runMatch()} method has already completed the match
+	 * between the two solvers.
+	 */
 	private boolean matchRan = false;
+	/**
+	 * Ensures a fresh random generator across all matches.
+	 */
 	private static final Random rng = new Random();
 
+	/**
+	 * The cumulative score of the match. These are the fields where
+	 * {@link #runMatch()} keeps track of the scores awarded to the solvers so far.
+	 * Once the match is done this never changes again.
+	 */
 	private int totalScoreOne = 0, totalScoreTwo = 0;
 
-	public SingleMatch(Class<? extends GameSolverThread> solverOne, Class<? extends GameSolverThread> solverTwo)
-			throws Exception {
+	/**
+	 * Keeps hold of the two solvers that needs to compete in the current match.
+	 * 
+	 * @param solverOne The first solver to participate in the match.
+	 * @param solverTwo The second solver to participate in the match.
+	 */
+	public SingleMatch(Class<? extends GameSolverThread> solverOne, Class<? extends GameSolverThread> solverTwo) {
 		this.solverOne = solverOne;
 		this.solverTwo = solverTwo;
 	}
 
 	/**
-	 * Runs two solvers in parallel and tests them for their performance on a
-	 * randomly generated map. The map's complexity is also set randomly within the
-	 * limits of this class' constants.
+	 * Runs two solvers in parallel (the solvers are started in a random order to
+	 * make sure the timing of their performance is consistent) and tests them for
+	 * their performance on a randomly generated map. The map's complexity is also
+	 * set randomly within the limits of this class' constants. The mine ratio of
+	 * the map is set between Easy to Insane (see {@link MineSweeper#levels}).
 	 * 
+	 * A single map is generated, but each solver has a chance to solve it 5 times.
+	 * The final score of the match is determined based on the total points awarded
+	 * by {@link #getCurrentScore(MineMap, long, MineMap, long)} after each chance.
 	 * 
-	 * @throws InstantiationException    if there is an issue of instantiation one
-	 *                                   of the solvers
-	 * @throws IllegalAccessException    if there is an issue of instantiation one
-	 *                                   of the solvers
-	 * @throws IllegalArgumentException  if there is an issue of instantiation one
-	 *                                   of the solvers
-	 * @throws InvocationTargetException if there is an issue of instantiation one
-	 *                                   of the solvers
-	 * @throws NoSuchMethodException     if there is an issue of instantiation one
-	 *                                   of the solvers
-	 * @throws SecurityException         if there is an issue of instantiation one
-	 *                                   of the solvers
+	 * @throws InstantiationException    if there is an issue of instantiation with
+	 *                                   one of the solvers
+	 * @throws IllegalAccessException    if there is an issue of instantiation with
+	 *                                   one of the solvers
+	 * @throws IllegalArgumentException  if there is an issue of instantiation with
+	 *                                   one of the solvers
+	 * @throws InvocationTargetException if there is an issue of instantiation with
+	 *                                   one of the solvers
+	 * @throws NoSuchMethodException     if there is an issue of instantiation with
+	 *                                   one of the solvers
+	 * @throws SecurityException         if there is an issue of instantiation with
+	 *                                   one of the solvers
 	 * @throws InterruptedException      if the sleep of the runMatch method was
 	 *                                   interrupted externally. If an interruption
 	 *                                   occurs, the match never reaches its
 	 *                                   completion
+	 * @throws RuntimeException          if one tries to re-run an already done
+	 *                                   match.
 	 */
 	public void runMatch() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, InterruptedException {
@@ -123,6 +175,8 @@ public class SingleMatch implements Scorer {
 					}
 					Thread.sleep(1);
 				}
+				// We wait a bit to allow both solvers to clean up and exit their solver
+				// threads.
 				Thread.sleep(10);
 				for (int j = 0; j < 2; j++) {
 					if (runnerThreads.get(j).isAlive()) {
@@ -131,12 +185,13 @@ public class SingleMatch implements Scorer {
 						System.exit(1);
 					}
 				}
+				final long oneDur = oneCompleteAt - startTime;
+				final long twoDur = twoCompleteAt - startTime;
+				totalScoreOne += getCurrentScore(solverOneMap, oneDur, solverTwoMap, twoDur);
+				totalScoreTwo += getCurrentScore(solverTwoMap, twoDur, solverOneMap, oneDur);
 
-				totalScoreOne += getCurrentScore(solverOneMap, oneCompleteAt - startTime, solverTwoMap,
-						twoCompleteAt - startTime);
-				totalScoreTwo += getCurrentScore(solverTwoMap, twoCompleteAt - startTime, solverOneMap,
-						oneCompleteAt - startTime);
-
+				// If interested in the performance of your solver you can check it out by
+				// uncommenting the below line:
 				// System.out.println("Duration of match was: " + (System.currentTimeMillis() -
 				// startTime) + "ms");
 			}
@@ -144,6 +199,32 @@ public class SingleMatch implements Scorer {
 		}
 	}
 
+	/**
+	 * Calculates the score of the team which was listed first in its parameters.
+	 * The calculation is following the below scheme:
+	 * <ol>
+	 * <li>Awards 100 points if the first team won but the other lost the game</li>
+	 * <li>Awards 90 points if both teams won but the first one was faster</li>
+	 * <li>Awards 80 points if both teams won but the first one was slower</li>
+	 * <li>Awards 0 points if the first team lost but the second won</li>
+	 * <li>If both teams lost the map, they both receive points based on two
+	 * components:
+	 * <ul>
+	 * <li>the ratio of correctly/incorrectly flagged mines (incorrect ones are
+	 * strongly penalised), max 20 points</li>
+	 * <li>the ratio of the explored areas of the two teams (i.e., how much more the
+	 * first team explored), max 40 points - 20 is the baseline if both teams
+	 * explore around the same area.</li>
+	 * </ul>
+	 * </li>
+	 * </ol>
+	 * 
+	 * @param teamOne The final map of the first team
+	 * @param durOne  The time it took team one to solve the map
+	 * @param teamTwo The final map of the second team
+	 * @param durTwo  The time it took for the second team to solve the map
+	 * @return The score of the team which was listed first in the parameters
+	 */
 	private static int getCurrentScore(final MineMap teamOne, final long durOne, final MineMap teamTwo,
 			final long durTwo) {
 		if (teamOne.isWon()) {
@@ -172,20 +253,44 @@ public class SingleMatch implements Scorer {
 
 	}
 
+	/**
+	 * Tells how the first team performed in the match. If the match has not been
+	 * run just yet, this returns -1.
+	 * 
+	 * See the {@link #getCurrentScore(MineMap, long, MineMap, long)} method for
+	 * details on how a solver's score is determined.
+	 */
 	@Override
 	public int getPointsForTeamOne() {
 		return matchRan ? totalScoreOne : -1;
 	}
 
+	/**
+	 * Tells how the second team performed in the match. If the match has not been
+	 * run just yet, this returns -1.
+	 * 
+	 * See the {@link #getCurrentScore(MineMap, long, MineMap, long)} method for
+	 * details on how a solver's score is determined.
+	 */
 	@Override
 	public int getPointsForTeamTwo() {
 		return matchRan ? totalScoreTwo : -1;
 	}
 
+	/**
+	 * Allows to query whether the match has already been done or not.
+	 * 
+	 * @return true if the match was done and the points for the scorer are the
+	 *         correct ones
+	 */
 	public boolean isMatchRan() {
 		return matchRan;
 	}
 
+	/**
+	 * Offers an easy way to present the results of a match if it is to be show in a
+	 * textual form.
+	 */
 	@Override
 	public String toString() {
 		return "Match between " + solverOne.getName() + " and " + solverTwo.getName() + " score: "

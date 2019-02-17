@@ -27,6 +27,29 @@ import java.util.Collections;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
+/**
+ * Runs two phase competition. First it organises solver groups of 3-4 solvers.
+ * The solvers of the groups must be specified on the command line. It organises
+ * individual {@link TeamCompetition}s for each group arranged. Then it selects
+ * the best eight teams from the groups according to the results of the
+ * {@link TeamCompetition}. In the second phase, these top teams then take place
+ * in a {@link SingleEliminationTournament}.
+ * 
+ * This is one of the main executables. If you have more than 8 solver
+ * implementations, it is recommended to run your competition with this
+ * executable.
+ * 
+ * <i>Note:</i> The solvers in the command line parameters must be specified as
+ * fully qualified class names (including package name). For example, the simple
+ * line by line solver should be referred as
+ * <i>uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.SimpleLineByLineSolver</i>
+ * on the command line. The referred class must be loadable by the same class
+ * loader that loaded the executable itself (i.e., it must be in the class
+ * path).
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
 public class RunCompetitionMultiPhase {
 
 	/**
@@ -38,8 +61,7 @@ public class RunCompetitionMultiPhase {
 	 *         competition
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Class<? extends GameSolverThread>> parseCompetingClassNames(String[] args,
-			int minSolvers) {
+	public static ArrayList<Class<? extends GameSolverThread>> parseCompetingClassNames(String[] args, int minSolvers) {
 		if (args.length < minSolvers) {
 			System.err.println("There are not enough solvers listed in the cli argument list.");
 			System.err.println("You should specify at least " + minSolvers + ".");
