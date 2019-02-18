@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap.MapCopyException;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.gui.MineSweeper;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
@@ -126,76 +127,88 @@ public class SingleMatch implements Scorer {
 	 */
 	public void runMatch() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, InterruptedException {
-		if (matchRan) {
-			throw new RuntimeException("Attemted to run a match two times");
-		} else {
-			MineMap singleMatchMap = new MineMap(rng.nextInt(maxRows - minRows) + minRows,
-					rng.nextInt(maxCols - minCols) + minCols,
-					// Ignores the easiest mine ratio, but allows any others
-					MineSweeper.mineRatios[rng.nextInt(MineSweeper.mineRatios.length - 1) + 1], 0);
+		try {
+			if (matchRan) {
+				throw new RuntimeException("Attemted to run a match two times");
+			} else {
+				MineMap singleMatchMap = new MineMap(rng.nextInt(maxRows - minRows) + minRows,
+						rng.nextInt(maxCols - minCols) + minCols,
+						// Ignores the easiest mine ratio, but allows any others
+						MineSweeper.mineRatios[rng.nextInt(MineSweeper.mineRatios.length - 1) + 1], 0);
 
-			// We need to ask to solve the same map a few times to make sure there is little
-			// effect of initial random probing on the map
-			for (int i = 0; i < 5; i++) {
-				MineMap solverOneMap = new MineMap(singleMatchMap);
-				MineMap solverTwoMap = new MineMap(singleMatchMap);
-				ArrayList<GameSolverThread> theTwoSolvers = new ArrayList<>();
-				ArrayList<Thread> runnerThreads = new ArrayList<>();
-				GameSolverThread firstSolverInstance = solverOne.getConstructor().newInstance();
-				firstSolverInstance.sendMap(solverOneMap);
-				theTwoSolvers.add(firstSolverInstance);
-				GameSolverThread secondSolverInstance = solverTwo.getConstructor().newInstance();
-				secondSolverInstance.sendMap(solverTwoMap);
-				theTwoSolvers.add(secondSolverInstance);
-				if (firstSolverInstance.requiresGUI() || secondSolverInstance.requiresGUI()) {
-					throw new RuntimeException("GUI based solvers cannot compete with SingleMatch");
-				}
-				// Randomizing the order with which the solvers are instantiated
-				Collections.shuffle(theTwoSolvers);
-				long startTime = System.currentTimeMillis();
-				// We should finish off both threads in the next minute
-				long maxAllowedTime = startTime + 60000;
-				for (GameSolverThread currSolver : theTwoSolvers) {
-					Thread runner = new Thread(currSolver);
-					runnerThreads.add(runner);
-					runner.start();
-				}
-				long oneCompleteAt = -1, twoCompleteAt = -1;
-				// We now have our two competing threads running, we can test for their
-				// completion
-				while (maxAllowedTime > System.currentTimeMillis() && (oneCompleteAt < 0 || twoCompleteAt < 0)) {
-					// Time is saved here so we can be sure one does not have an edge over two
-					// because it is tested for completion later
-					long currentTime = System.currentTimeMillis();
-					if (oneCompleteAt == -1 && solverOneMap.isEnded()) {
-						oneCompleteAt = currentTime;
+				// We need to ask to solve the same map a few times to make sure there is little
+				// effect of initial random probing on the map
+				for (int i = 0; i < 5; i++) {
+					MineMap solverOneMap = new MineMap(singleMatchMap, false);
+					MineMap solverTwoMap = new MineMap(singleMatchMap, false);
+					ArrayList<GameSolverThread> theTwoSolvers = new ArrayList<>();
+					ArrayList<Thread> runnerThreads = new ArrayList<>();
+					GameSolverThread firstSolverInstance = solverOne.getConstructor().newInstance();
+					firstSolverInstance.sendMap(solverOneMap);
+					theTwoSolvers.add(firstSolverInstance);
+					GameSolverThread secondSolverInstance = solverTwo.getConstructor().newInstance();
+					secondSolverInstance.sendMap(solverTwoMap);
+					theTwoSolvers.add(secondSolverInstance);
+					if (firstSolverInstance.requiresGUI() || secondSolverInstance.requiresGUI()) {
+						throw new RuntimeException("GUI based solvers cannot compete with SingleMatch");
 					}
-					if (twoCompleteAt == -1 && solverTwoMap.isEnded()) {
-						twoCompleteAt = currentTime;
+					// Randomizing the order with which the solvers are instantiated
+					Collections.shuffle(theTwoSolvers);
+					long startTime = System.currentTimeMillis();
+					// We should finish off both threads in the next minute
+					long maxAllowedTime = startTime + 60000;
+					for (GameSolverThread currSolver : theTwoSolvers) {
+						Thread runner = new Thread(currSolver);
+						runnerThreads.add(runner);
+						runner.start();
 					}
-					Thread.sleep(1);
-				}
-				// We wait a bit to allow both solvers to clean up and exit their solver
-				// threads.
-				Thread.sleep(10);
-				for (int j = 0; j < 2; j++) {
-					if (runnerThreads.get(j).isAlive()) {
-						System.err.println(theTwoSolvers.get(j).getClass().getName()
-								+ " did not terminate at the end of the game. It should be excluded from competitions.");
-						System.exit(1);
+					long oneCompleteAt = -1, twoCompleteAt = -1;
+					// We now have our two competing threads running, we can test for their
+					// completion
+					while (maxAllowedTime > System.currentTimeMillis() && (oneCompleteAt < 0 || twoCompleteAt < 0)) {
+						// Time is saved here so we can be sure one does not have an edge over two
+						// because it is tested for completion later
+						long currentTime = System.currentTimeMillis();
+						if (oneCompleteAt == -1 && solverOneMap.isEnded()) {
+							oneCompleteAt = currentTime;
+						}
+						if (twoCompleteAt == -1 && solverTwoMap.isEnded()) {
+							twoCompleteAt = currentTime;
+						}
+						Thread.sleep(1);
 					}
-				}
-				final long oneDur = oneCompleteAt - startTime;
-				final long twoDur = twoCompleteAt - startTime;
-				totalScoreOne += getCurrentScore(solverOneMap, oneDur, solverTwoMap, twoDur);
-				totalScoreTwo += getCurrentScore(solverTwoMap, twoDur, solverOneMap, oneDur);
+					// We wait a bit to allow both solvers to clean up and exit their solver
+					// threads.
+					Thread.sleep(10);
+					for (int j = 0; j < 2; j++) {
+						if (runnerThreads.get(j).isAlive()) {
+							System.err.println(theTwoSolvers.get(j).getClass().getName()
+									+ " did not terminate at the end of the game. It should be excluded from competitions.");
+							System.exit(1);
+						}
+					}
+					final long oneDur = oneCompleteAt - startTime;
+					final long twoDur = twoCompleteAt - startTime;
+					totalScoreOne += getCurrentScore(solverOneMap, oneDur, solverTwoMap, twoDur);
+					totalScoreTwo += getCurrentScore(solverTwoMap, twoDur, solverOneMap, oneDur);
 
-				// If interested in the performance of your solver you can check it out by
-				// uncommenting the below line:
-				// System.out.println("Duration of match was: " + (System.currentTimeMillis() -
-				// startTime) + "ms");
+					// If interested in the performance of your solver you can check it out by
+					// uncommenting the below line:
+					// System.out.println("Duration of match was: " + (System.currentTimeMillis() -
+					// startTime) + "ms");
+				}
+				matchRan = true;
 			}
-			matchRan = true;
+		} catch (MapCopyException ex) {
+			System.err.println("One of the solvers tried to copy the map. This is a malicious activity.");
+			System.err.println("We are stopping now to allow the exclusion of the problematic solver.");
+			System.err.println("Solvers in question:");
+			System.err.println(solverOne.getName());
+			System.err.println(solverTwo.getName());
+			System.err.println();
+			System.err.println();
+			ex.printStackTrace();
+			System.exit(1);
 		}
 	}
 

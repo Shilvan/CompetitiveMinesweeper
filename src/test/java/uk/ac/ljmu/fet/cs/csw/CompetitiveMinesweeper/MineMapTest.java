@@ -31,6 +31,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap.MapCopyException;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.Spot;
 
 public class MineMapTest {
@@ -273,9 +274,9 @@ public class MineMapTest {
 	}
 
 	@Test(timeout = 50)
-	public void simpleCopyTest() {
+	public void simpleCopyTest() throws MapCopyException {
 		final MineMap orig = genDefaultMap();
-		final MineMap newer = new MineMap(orig);
+		final MineMap newer = new MineMap(orig, false);
 		assertEquals("Coloumns should be copied", cols, newer.cols);
 		assertEquals("Rows should be copied", rows, newer.rows);
 		assertEquals("Field size is not reported correctly in the copy", cols * rows, newer.fieldSize);
@@ -283,7 +284,7 @@ public class MineMapTest {
 	}
 
 	@Test(timeout = 50)
-	public void midGameCopyTest() {
+	public void midGameCopyTest() throws MapCopyException {
 		MineMap mm;
 		do {
 			mm = genDefaultMap();
@@ -296,7 +297,7 @@ public class MineMapTest {
 				mm.flagASpot(rc, cc);
 			}
 			if (!mm.isEnded()) {
-				final MineMap newer = new MineMap(mm);
+				final MineMap newer = new MineMap(mm, false);
 				for (int dcc = 0; dcc < cols; dcc++) {
 					for (int drc = 0; drc < rows; drc++) {
 						assertEquals("All the explored area should have the same amount of mines around them",
@@ -307,7 +308,13 @@ public class MineMapTest {
 				}
 			}
 		} while (mm.isEnded());
+	}
 
+	@Test(timeout = 50, expected = MapCopyException.class)
+	public void blockRepeatedCopy() throws MapCopyException {
+		MineMap mm = genDefaultMap();
+		MineMap firstCopy = new MineMap(mm, false);
+		MineMap secondCopy = new MineMap(firstCopy, true);
 	}
 
 }

@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap.MapCopyException;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.HumanSolver;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
@@ -102,12 +103,15 @@ public class GUIHelper {
 	 * @throws InvocationTargetException
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
+	 * @throws MapCopyException          if the solver in the first parameter tries
+	 *                                   to make an unexpected copy of the map.
 	 */
 	static MineMap launchCompetitor(Class<? extends GameSolverThread> comp, LaunchGUI mygui, MineMap base,
-			int pushright, int pushdown, boolean scale) throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+			int pushright, int pushdown, boolean scale)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, MapCopyException {
 		GameSolverThread gst = comp.getConstructor().newInstance();
-		MineMap myMap = gst instanceof HumanSolver ? new MineMap(base, 0) : new MineMap(base);
+		MineMap myMap = gst instanceof HumanSolver ? new MineMap(base, 0, false) : new MineMap(base, false);
 		gst.sendMap(myMap);
 		SimpleGamePanel gui = mygui.launch(myMap, comp.getSimpleName() + " solving this window", scale);
 		Point oldLoc = gui.getLocation();

@@ -36,6 +36,16 @@ import java.util.Random;
  *         Moores University, (c) 2019"
  */
 public class MineMap {
+
+	public class MapCopyException extends Exception {
+		private static final long serialVersionUID = -8312441820699627778L;
+
+		public MapCopyException(final String message) {
+			super(message);
+		}
+
+	}
+
 	// the random generator for all minemaps
 	public static final Random r = new Random();
 
@@ -72,6 +82,9 @@ public class MineMap {
 	// true if the constructor has done deploying the mines. If true, the
 	// sweepAround method is used for tracing unexplored non-mined areas
 	private boolean preparedMap;
+
+	private boolean allowCopy = true;
+
 	private int lastCol = -1, lastRow = -1;
 
 	/**
@@ -130,8 +143,13 @@ public class MineMap {
 	 * original.
 	 * 
 	 * @param otherToCopy The original map to copy from.
+	 * @param allowCopy   Specify if we allow further copies of this map. True if we
+	 *                    allow them, false otherwise.
+	 * @throws MapCopyException If the map in the first parameter is not supposed to
+	 *                          be copied.
 	 */
-	public MineMap(final MineMap otherToCopy) {
+	public MineMap(final MineMap otherToCopy, final boolean allowCopy) throws MapCopyException {
+		checkRightToCopy(otherToCopy, allowCopy);
 		// Copies all the data members
 		uidelay = otherToCopy.uidelay;
 		rows = otherToCopy.rows;
@@ -145,15 +163,38 @@ public class MineMap {
 	}
 
 	/**
+	 * This method is a helper for the copy constructors and ensures that only those
+	 * copies are done which are allowed to be copied. It also maintains the class's
+	 * {@link #allowCopy} data member.
+	 * 
+	 * @param otherToCopy The source of the copying
+	 * @param allowCopy   if the copy is allowed then this value will be the new
+	 *                    copy's {@link #allowCopy} data member. True if further
+	 *                    copies are allowed, false otherwise.
+	 * @throws MapCopyException If the source is not allowed to be copied.
+	 */
+	private void checkRightToCopy(final MineMap otherToCopy, final boolean allowCopy) throws MapCopyException {
+		if (!otherToCopy.allowCopy) {
+			throw new MapCopyException("The source map cannot be copied further");
+		}
+		this.allowCopy = allowCopy;
+	}
+
+	/**
 	 * A slight variant of the copy constructor ({@link #MineMap(MineMap)}). This
 	 * variant allows uiDelays to be changed while the rest of the map is copied
 	 * just like in the other case. For relevant use cases check the description of
 	 * the other copy constructor as well.
 	 * 
-	 * @param otherToCopy
-	 * @param newUIdelay
+	 * @param otherToCopy The original map to copy from.
+	 * @param allowCopy   Specify if we allow further copies of this map. True if we
+	 *                    allow them, false otherwise.
+	 * @param newUIdelay  The alternative UI delay to be used with this map instance
+	 * @throws MapCopyException If the map in the first parameter is not supposed to
+	 *                          be copied.
 	 */
-	public MineMap(final MineMap otherToCopy, final int newUIdelay) {
+	public MineMap(final MineMap otherToCopy, final int newUIdelay, final boolean allowCopy) throws MapCopyException {
+		checkRightToCopy(otherToCopy, allowCopy);
 		uidelay = newUIdelay;
 		rows = otherToCopy.rows;
 		cols = otherToCopy.cols;

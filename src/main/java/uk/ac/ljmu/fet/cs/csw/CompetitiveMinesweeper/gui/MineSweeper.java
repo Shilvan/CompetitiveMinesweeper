@@ -43,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap;
+import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.MineMap.MapCopyException;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.HumanSolver;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
 
@@ -278,10 +279,12 @@ public class MineSweeper extends JFrame implements ActionListener {
 	 * @throws InvocationTargetException
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
+	 * @throws MapCopyException          if the solver in the first parameter tries
+	 *                                   to make an unexpected copy of the map.
 	 */
 	private void launchCompetitor(final Class<? extends GameSolverThread> comp, final MineMap base, final boolean shift)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
+			NoSuchMethodException, SecurityException, MapCopyException {
 		GUIHelper.launchCompetitor(comp, new GUIHelper.LaunchGUI() {
 			@Override
 			public SimpleGamePanel launch(final MineMap map, final String title, final boolean scale) {
