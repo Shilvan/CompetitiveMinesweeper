@@ -111,7 +111,7 @@ public class GUIHelper {
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, MapCopyException {
 		GameSolverThread gst = comp.getConstructor().newInstance();
-		MineMap myMap = gst instanceof HumanSolver ? new MineMap(base, 0, false) : new MineMap(base, false);
+		MineMap myMap = gst instanceof HumanSolver ? new MineMap(base, 0) : new MineMap(base);
 		gst.sendMap(myMap);
 		SimpleGamePanel gui = mygui.launch(myMap, comp.getSimpleName() + " solving this window", scale);
 		Point oldLoc = gui.getLocation();

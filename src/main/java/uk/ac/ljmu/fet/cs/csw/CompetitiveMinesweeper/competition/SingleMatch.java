@@ -139,8 +139,8 @@ public class SingleMatch implements Scorer {
 				// We need to ask to solve the same map a few times to make sure there is little
 				// effect of initial random probing on the map
 				for (int i = 0; i < 5; i++) {
-					MineMap solverOneMap = new MineMap(singleMatchMap, false);
-					MineMap solverTwoMap = new MineMap(singleMatchMap, false);
+					MineMap solverOneMap = new MineMap(singleMatchMap);
+					MineMap solverTwoMap = new MineMap(singleMatchMap);
 					ArrayList<GameSolverThread> theTwoSolvers = new ArrayList<>();
 					ArrayList<Thread> runnerThreads = new ArrayList<>();
 					GameSolverThread firstSolverInstance = solverOne.getConstructor().newInstance();

@@ -163,6 +163,14 @@ public class MineMap {
 	}
 
 	/**
+	 * This copy constructor acts like {@link #MineMap(MineMap, boolean)} but always
+	 * assumes that the copy is not allowed to be copied anymore.
+	 */
+	public MineMap(final MineMap otherToCopy) throws MapCopyException {
+		this(otherToCopy, false);
+	}
+
+	/**
 	 * This method is a helper for the copy constructors and ensures that only those
 	 * copies are done which are allowed to be copied. It also maintains the class's
 	 * {@link #allowCopy} data member.
@@ -204,6 +212,14 @@ public class MineMap {
 		fieldSize = otherToCopy.fieldSize;
 		mineCount = otherToCopy.mineCount;
 		copyHelper(otherToCopy);
+	}
+
+	/**
+	 * This copy constructor acts like {@link #MineMap(MineMap, int, boolean)} but
+	 * always assumes that the copy is not allowed to be copied anymore.
+	 */
+	public MineMap(final MineMap otherToCopy, final int newUIdelay) throws MapCopyException {
+		this(otherToCopy, false);
 	}
 
 	/**
