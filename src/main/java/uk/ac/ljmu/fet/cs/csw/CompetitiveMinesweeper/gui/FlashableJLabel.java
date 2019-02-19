@@ -105,6 +105,7 @@ public class FlashableJLabel extends JLabel {
 	 */
 	public void flash(final Color finish, final int delay) {
 		// Queue the flashing request
+		if(ex.isShutdown()) return;
 		ex.execute(new Runnable() {
 			/**
 			 * This method is called by the executor when there are no queued flashing
