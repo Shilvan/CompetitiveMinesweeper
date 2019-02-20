@@ -356,7 +356,7 @@ public class MineMap {
 		if (gameEnded) {
 			return true;
 		}
-		if (checkOutOfRange(rowCoord, colCoord)) {
+		if (checkOutOfRange(rowCoord, colCoord) || Spot.FLAG.equals(exploredMap[rowCoord][colCoord].type)) {
 			return false;
 		}
 

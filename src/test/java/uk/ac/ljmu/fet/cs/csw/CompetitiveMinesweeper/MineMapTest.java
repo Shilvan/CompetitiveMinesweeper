@@ -324,4 +324,22 @@ public class MineMapTest {
 		MineMap secondCopy = new MineMap(firstCopy, true);
 	}
 
+	@Test(timeout = 50)
+	public void shouldNotAllowPickingAFlaggedSpot() {
+		MineMap mm = genDefaultMap();
+		mm.flagASpot(0, 0);
+		mm.pickASpot(0, 0);
+		assertEquals("Flagged spot should not be possible to change with pick a spot", Spot.FLAG, mm.getPos(0, 0).type);
+	}
+
+	@Test(timeout = 50)
+	public void shouldNotAllowPickingACorrectlyFlaggedSpot() {
+		genMineDetails();
+		MineMap allMines = new MineMap(rows, cols, 1, 0);
+		allMines.flagASpot(0, 0);
+		allMines.pickASpot(0, 0);
+		assertEquals("A correctly flagged spot should not be possible to change with pick a spot", Spot.FLAG,
+				allMines.getPos(0, 0).type);
+	}
+
 }
