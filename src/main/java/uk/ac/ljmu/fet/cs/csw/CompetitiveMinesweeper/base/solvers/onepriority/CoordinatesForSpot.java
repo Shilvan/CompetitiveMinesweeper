@@ -22,9 +22,26 @@
  */
 package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.onepriority;
 
+/**
+ * Allows to store the two coordinates of a spot on a minemap. Objects of this
+ * class keep their data constant to allow rapid access to them.
+ * 
+ * @author "Gabor Kecskemeti, Department of Computer Science, Liverpool John
+ *         Moores University, (c) 2019"
+ */
+
 public class CoordinatesForSpot {
+	/**
+	 * The coordinates to remember by the instances of this class are stored here
+	 */
 	public final int rowCoord, colCoord;
 
+	/**
+	 * Allows pairing up two coordinates together in an easyly accessible fashion.
+	 * 
+	 * @param rowC The row coordinate to remember.
+	 * @param colC The column coordiante to remember.
+	 */
 	public CoordinatesForSpot(final int rowC, final int colC) {
 		rowCoord = rowC;
 		colCoord = colC;

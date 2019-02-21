@@ -6,7 +6,7 @@
 	<!-- Package details for maven repositories -->
 	<groupId>uk.ac.ljmu.fet.cs.csw</groupId>
 	<artifactId>CompetitiveMinesweeper</artifactId>
-	<version>0.9</version>
+	<version>0.9.1</version>
 	<packaging>jar</packaging>
 
 	<!-- additional metadata -->
