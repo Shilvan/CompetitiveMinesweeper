@@ -22,6 +22,9 @@
  */
 package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.competition;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +45,11 @@ import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.interfaces.GameSolverThread;
  *         Moores University, (c) 2019"
  */
 public class SingleMatch implements Scorer {
+	public final static boolean quiet = System
+			.getProperty("uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.competition.SingleMatch.quietmode") != null;
+
+	public final static PrintStream realStdOut = System.out;
+	public final static PrintStream realStdErr = System.err;
 	/**
 	 * The minimum number of rows in a particular match. When a match is set up the
 	 * base map will be generated with this in mind.
@@ -143,6 +151,7 @@ public class SingleMatch implements Scorer {
 					MineMap solverTwoMap = new MineMap(singleMatchMap);
 					ArrayList<GameSolverThread> theTwoSolvers = new ArrayList<>();
 					ArrayList<Thread> runnerThreads = new ArrayList<>();
+					introduceRedirections();
 					GameSolverThread firstSolverInstance = solverOne.getConstructor().newInstance();
 					firstSolverInstance.sendMap(solverOneMap);
 					theTwoSolvers.add(firstSolverInstance);
@@ -150,6 +159,7 @@ public class SingleMatch implements Scorer {
 					secondSolverInstance.sendMap(solverTwoMap);
 					theTwoSolvers.add(secondSolverInstance);
 					if (firstSolverInstance.requiresGUI() || secondSolverInstance.requiresGUI()) {
+						revertRedirects();
 						throw new RuntimeException("GUI based solvers cannot compete with SingleMatch");
 					}
 					// Randomizing the order with which the solvers are instantiated
@@ -177,6 +187,7 @@ public class SingleMatch implements Scorer {
 						}
 						Thread.sleep(1);
 					}
+					revertRedirects();
 					// We wait a bit to allow both solvers to clean up and exit their solver
 					// threads.
 					Thread.sleep(10);
@@ -308,5 +319,35 @@ public class SingleMatch implements Scorer {
 	public String toString() {
 		return "Match between " + solverOne.getName() + " and " + solverTwo.getName() + " score: "
 				+ (matchRan ? ("" + getPointsForTeamOne() + "/" + getPointsForTeamTwo()) : "-");
+	}
+
+	public void introduceRedirections() {
+		if (quiet) {
+			try {
+				System.setOut(new PrintStream(new OutputStream() {
+					@Override
+					public void write(int arg0) throws IOException {
+
+					}
+				}));
+				System.setErr(new PrintStream(new OutputStream() {
+
+					@Override
+					public void write(int arg0) throws IOException {
+
+					}
+				}));
+
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public void revertRedirects() {
+		if (quiet) {
+			System.setOut(realStdOut);
+			System.setErr(realStdErr);
+		}
 	}
 }
