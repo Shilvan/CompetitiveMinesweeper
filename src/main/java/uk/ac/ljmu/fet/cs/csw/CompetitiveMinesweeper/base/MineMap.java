@@ -96,8 +96,19 @@ public class MineMap {
 	 *                  spots in the whole map.
 	 * @param uidelay   How long should we wait before each AI operation takes
 	 *                  action.
+	 * 
+	 * @throws IllegalArgumentException   if the number of mines would be more than
+	 *                                    the total number of spots, or when the
+	 *                                    uidelay would be negative (should finish
+	 *                                    the delay before we even start?!)
+	 * @throws NegativeArraySizeException if the nr. of columns or rows were set to
+	 *                                    a negative value
 	 */
 	public MineMap(final int rows, final int cols, final double mineRatio, int uidelay) {
+		if (mineRatio > 1) {
+			throw new IllegalArgumentException("Impossible to create a map with more mines than spots");
+		}
+		checkForCorrectUIDelay(uidelay);
 		// Basic init
 		this.uidelay = uidelay;
 		this.rows = rows;
@@ -189,6 +200,24 @@ public class MineMap {
 	}
 
 	/**
+	 * Checks if the specified UI delay is acceptable as Thread.sleep's input. If
+	 * not it throws an IllegalArgumentException.
+	 * 
+	 * <i>Warning: this method does not actually set the delay, just checks its
+	 * value. It is still the constructor that is responsible for setting the value
+	 * itself in the corresponding data field.</i>
+	 * 
+	 * @param uidelay How long should we wait before each AI operation takes action.
+	 * @throws IllegalArgumentException when the uidelay would be negative (should
+	 *                                  finish the delay before we even start?!)
+	 */
+	private void checkForCorrectUIDelay(final int uidelay) {
+		if (uidelay < 0) {
+			throw new IllegalArgumentException("UI cannot have a negative delay");
+		}
+	}
+
+	/**
 	 * A slight variant of the copy constructor ({@link #MineMap(MineMap)}). This
 	 * variant allows uiDelays to be changed while the rest of the map is copied
 	 * just like in the other case. For relevant use cases check the description of
@@ -200,8 +229,11 @@ public class MineMap {
 	 * @param newUIdelay  The alternative UI delay to be used with this map instance
 	 * @throws MapCopyException If the map in the first parameter is not supposed to
 	 *                          be copied.
+	 * @throws IllegalArgumentException when the uidelay would be negative (should
+	 *                                  finish the delay before we even start?!)
 	 */
 	public MineMap(final MineMap otherToCopy, final int newUIdelay, final boolean allowCopy) throws MapCopyException {
+		checkForCorrectUIDelay(newUIdelay);
 		checkRightToCopy(otherToCopy, allowCopy);
 		uidelay = newUIdelay;
 		rows = otherToCopy.rows;
@@ -219,7 +251,7 @@ public class MineMap {
 	 * always assumes that the copy is not allowed to be copied anymore.
 	 */
 	public MineMap(final MineMap otherToCopy, final int newUIdelay) throws MapCopyException {
-		this(otherToCopy, false);
+		this(otherToCopy, newUIdelay, false);
 	}
 
 	/**
