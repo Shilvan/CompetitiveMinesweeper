@@ -41,7 +41,7 @@ public class SingleSet implements Scorer {
 	 * The arranged set with all the matches. This is automatically generated upon
 	 * construction of an instance of this class.
 	 */
-	private final SingleMatch[] matches = new SingleMatch[10];
+	private final SingleMatch[] matches = new SingleMatch[20];
 	/**
 	 * The two solvers that play against each other
 	 */
