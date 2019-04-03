@@ -342,4 +342,30 @@ public class MineMapTest {
 				allMines.getPos(0, 0).type);
 	}
 
+	@Test(timeout = 50, expected = IllegalArgumentException.class)
+	public void shouldNotAcceptBiggerThanOneMineRatios() {
+		genMineDetails();
+		new MineMap(rows, cols, 2, 0);
+	}
+
+	@Test(timeout = 50, expected = NegativeArraySizeException.class)
+	public void shouldNotAcceptNegativeRows() {
+		genMineDetails();
+		new MineMap(-1, cols, mineRatio, 0);
+	}
+
+	@Test(timeout = 50, expected = IllegalArgumentException.class)
+	public void shouldNotAcceptNegativeUIDelay() {
+		genMineDetails();
+		MineMap mm = new MineMap(rows, cols, mineRatio, -1);
+		mm.flagASpot(0, 0);
+	}
+
+	@Test(timeout = 50, expected = IllegalArgumentException.class)
+	public void shouldNotAcceptNegativeUIDelayDuringCopy() throws MapCopyException {
+		genMineDetails();
+		MineMap mm = new MineMap(rows, cols, mineRatio, 0);
+		new MineMap(mm, -1);
+	}
+
 }
