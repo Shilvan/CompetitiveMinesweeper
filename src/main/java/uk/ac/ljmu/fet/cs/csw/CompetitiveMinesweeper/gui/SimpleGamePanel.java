@@ -56,27 +56,27 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 	/**
 	 * Colour of unknown territory
 	 */
-	public static final Color inFogColor = new Color(12, 36, 97);
+	public static final Color inFogColour = new Color(12, 36, 97);
 	/**
 	 * Colour of explored territory
 	 */
-	public static final Color clearColor = new Color(74, 105, 189);
+	public static final Color clearColour = new Color(74, 105, 189);
 	/**
 	 * Colour of regular cell contents
 	 */
-	public static final Color textColor = new Color(246, 185, 59);
+	public static final Color textColour = new Color(246, 185, 59);
 	/**
 	 * Colour of flagged spot
 	 */
-	public static final Color flagColor = new Color(229, 80, 57);
+	public static final Color flagColour = new Color(229, 80, 57);
 	/**
 	 * Colour of a spot recently picked/flagged
 	 */
-	public static final Color pickedColor = new Color(130, 204, 221);
+	public static final Color pickedColour = new Color(130, 204, 221);
 	/**
 	 * Colour to depict the place of death of our sweeper
 	 */
-	public static final Color deadColor = new Color(183, 21, 64);
+	public static final Color deadColour = new Color(183, 21, 64);
 	/**
 	 * Colour to show the winning spiral in
 	 */
@@ -137,7 +137,7 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 				currSpot.setText(" ");
 				// Must be opaque so the background colour changes are visible
 				currSpot.setOpaque(true);
-				ensureColour(currSpot, textColor, inFogColor);
+				ensureColour(currSpot, textColour, inFogColour);
 				// Sizing the cell and its font
 				currSpot.setFont(new Font(Font.MONOSPACED, Font.PLAIN, spotSize - 1));
 				currSpot.setPreferredSize(new Dimension(spotSize, spotSize));
@@ -192,8 +192,8 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 	}
 
 	/**
-	 * This method updates all labels in the play area to show the state of the
-	 * map at the time when the method is called.
+	 * This method updates all labels in the play area to show the state of the map
+	 * at the time when the method is called.
 	 */
 	private void refreshArea() {
 		for (int rc = 0; rc < toMonitor.rows; rc++) {
@@ -208,12 +208,12 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 				case EXPLODED:
 					// A star sign
 					toShowinSpot = 0x2600;
-					ensureColour(currLabel, textColor, clearColor);
+					ensureColour(currLabel, textColour, clearColour);
 					break;
 				case FLAG:
 					// A flag sign
 					toShowinSpot = 0x2691;
-					ensureColour(currLabel, flagColor, clearColor);
+					ensureColour(currLabel, flagColour, clearColour);
 					break;
 				case MINE:
 					System.err.println("A mine was in an explored spot, MineMap is broken!");
@@ -222,12 +222,12 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 					// A number (if there are mines nearby) or a space (if there are no mines
 					// around)
 					toShowinSpot = currSpot.nearMineCount == 0 ? ' ' : (char) ('0' + currSpot.nearMineCount);
-					ensureColour(currLabel, textColor, clearColor);
+					ensureColour(currLabel, textColour, clearColour);
 					break;
 				case UNEXPLORED:
 					// Space ...
 					toShowinSpot = ' ';
-					ensureColour(currLabel, textColor, inFogColor);
+					ensureColour(currLabel, textColour, inFogColour);
 					break;
 				}
 				String newText = "" + toShowinSpot;
@@ -255,7 +255,7 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 				flashedRow = currLastRow;
 				flashedCol = currLastCol;
 				// We ask the label to flash itself
-				field.get(flashedRow).get(flashedCol).flash(pickedColor, 20);
+				field.get(flashedRow).get(flashedCol).flash(pickedColour, 20);
 			}
 
 			// We have done all the refresh procedures needed for this cycle. We can now
@@ -269,7 +269,8 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 			// If the game has not ended yet we will repeat this loop.
 		} while (!toMonitor.isEnded());
 
-		// Refresh the area the last time (as in there could have been updates to the map in
+		// Refresh the area the last time (as in there could have been updates to the
+		// map in
 		// the last 50 ms long sleep)
 		refreshArea();
 
@@ -321,8 +322,11 @@ public class SimpleGamePanel extends JFrame implements Runnable {
 			// If the game has not been won, we will flash the mine that killed us a few
 			// times
 			for (int i = 0; i < 20; i++) {
-				field.get(toMonitor.getLastRow()).get(toMonitor.getLastCol()).flash(deadColor, 40);
+				field.get(toMonitor.getLastRow()).get(toMonitor.getLastCol()).flash(deadColour, 40);
 			}
+			// At the end of all the dead Colour flashes we leave the background with the
+			// dead colour
+			field.get(toMonitor.getLastRow()).get(toMonitor.getLastCol()).setExpectedBackground(deadColour);
 		}
 		if (disposeAfterRun) {
 			dispose();
