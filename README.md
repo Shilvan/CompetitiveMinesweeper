@@ -42,8 +42,8 @@ CompetitiveMinesweeper depends on the following libraries during its runtime:
 
 ### How to run
 The main GUI to be run is [MineSweeper](https://github.com/kecskemeti/CompetitiveMinesweeper/blob/master/src/main/java/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/gui/MineSweeper.java). This will produce a simple configurator window which has the following settings:
-* The dimensions of the playing field
-* The selection of the difficulty level (i.e. what's the percentage of mines in relation to the playing field's area)
+* The dimensions of the playing field.
+* The selection of the difficulty level (i.e. what's the percentage of mines in relation to the playing field's area).
 * If we want to play as a human player then we can opt for it here.
 * If we wish to challange two AI solutions with the same puzzle, then we can specify the two AI's fully qualified classnames here as well. The only AI offered by default is called uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.SimpleLineByLineSolver .
 * Finally we can configure the speed of the AI. Each operation of the AI can be delayed between 0-1000ms. The slider which allows speed adjustments offers a few hints. 0 delay means we want to see the AI's raw speed. 
