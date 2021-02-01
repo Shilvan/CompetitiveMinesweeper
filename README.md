@@ -56,7 +56,7 @@ If the game is configured one can click the "GO" button and one/two minesweeping
 If the game completes (because of the player exploding or completely exploring the field) the main game window will offer to start a new game or return to the configuration window. Note, closing any game's window will result in the complete termination of the main application.
 
 ### How to add a new AI solver
-* Extend the class AbstractSolver
+* Extend the class AbstractSolver.
 * Make sure to create a run() method that attempts to solve the given [MineMap](https://kecskemeti.github.io/CompetitiveMinesweeper/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/MineMap.html). 
 * When the game is running, this method will be run in its own thread and the GUI will visualise the game while your AI tries to solve the MineMap. The GUI assumes your AI will eventually make the MineMap pronouncing the end of the game (i.e., the [isEnded method](https://kecskemeti.github.io/CompetitiveMinesweeper/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/MineMap.html#isEnded()) should eventually return true. If this is not the case please rework your AI. 
 * You are recommended to check out MineMap's api documentation for further details.
