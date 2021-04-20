@@ -6,7 +6,7 @@
 	<!-- Package details for maven repositories -->
 	<groupId>uk.ac.ljmu.fet.cs.csw</groupId>
 	<artifactId>CompetitiveMinesweeper</artifactId>
-	<version>0.9.1</version>
+	<version>6</version>
 	<packaging>jar</packaging>
 
 	<!-- additional metadata -->
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -50,8 +50,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.9</source>
+					<target>1.9</target>
 				</configuration>
 			</plugin>
 			<plugin>
