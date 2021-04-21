@@ -1,7 +1,5 @@
 package uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.csw6.tests;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
@@ -20,63 +18,34 @@ import java.util.Random;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.FinalAreaFlagger;
 import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.onepriority.CoordinatesForSpot;
 
-public class TestForSpotIteration {
+public class TestSearchAroundSpot {
+	
 	@Test(timeout = 50)
-	public void testIteratedCompleteList() {
+	public void searchAroundSpot() {
+		MineMap myMap = new MineMap(15, 15, 0.08, 0); //"Piece of cake", "Easy", "Medium", "Hard", "Pro", "Insane", Starting at 0.04 and adding 0.04
 		
-		//Pick a spot at random
-		//doFullAreaRandomPick(theMapToSolve);
-		
-		MineMap myMap = new MineMap(15, 15, 0.12, 0); //"Piece of cake", "Easy", "Medium", "Hard", "Pro", "Insane", Starting at 0.04 and adding 0.04
-		doFullAreaRandomPick(myMap);
-		
-		int count = 0;
-		for(int i = 1; i < 9; i++) {
-			int nearMine = i;
-			boolean spotPicked = false;
-			List<CoordinatesForSpot> sameNearMineCountSpots = searchNearMineCount(myMap, i);
-			if(sameNearMineCountSpots.isEmpty()) {
-				if (i == 8) {
-					i = 0;
-					doFullAreaRandomPick(myMap);
-					spotPicked =true;
-					
-				}
+		do {
+			
+			
+			CoordinatesForSpot centre = doFullAreaRandomPick(myMap);
+			if (centre == null) {
+				System.out.println("There are no unexplored spots around the spot");
 			} else {
-				count +=1;
-				//NOT EMPTY
+				
+				searchAroundCentre(myMap, centre);
 				
 			}
 			
-			System.out.print("\n-NEAR MINE COUNT " + nearMine + ": " );
-			for(CoordinatesForSpot spot : sameNearMineCountSpots) {
-				System.out.print("(" + spot.rowCoord + ", " + spot.colCoord +"), ");
-				//SEARCH AROUND SPOT
-				
-				searchAroundCentre(myMap, spot);
-				
-			}
+			
+		} while(!myMap.isEnded());
 		
-			if (spotPicked)
-				System.out.println("\n\nSpot picked");
-			
-			if(myMap.isWon())
-				System.out.println("\nYOU WON!!!!");
-			
-			if(myMap.isEnded())
-				return;
-			
-			
-			//allOnes.isEmpty()
-			//Collections.shuffle(allOnes);
-			
-		}
+		
 		
 	}
 	
 	
-	public void searchAroundCentre(MineMap myMap, CoordinatesForSpot centre) {
-		
+	
+	public static void searchAroundCentre(MineMap myMap, CoordinatesForSpot centre) {
 		ArrayList<CoordinatesForSpot> unexploredSpots = new ArrayList<>();
 		ArrayList<CoordinatesForSpot> flaggedSpots = new ArrayList<>();
 		
@@ -99,7 +68,7 @@ public class TestForSpotIteration {
 			}
 		}
 		
-		if (flaggedSpots.size() + unexploredSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) {
+		if (flaggedSpots.size() + unexploredSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount && myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount != 0) {
 			System.out.println("Complete flagging of the area around a spot (flagged spots: " + flaggedSpots.size() + ", spots to flag: " + unexploredSpots.size() + " , near mine count: " + myMap.getPos(0,0).nearMineCount + ")" );
 			FinalAreaFlagger.flagSpots(myMap, unexploredSpots); //flag the unexplored spots
 			
@@ -107,7 +76,7 @@ public class TestForSpotIteration {
 				assertEquals("(" + spot.rowCoord +", "+ spot.colCoord+") " +"wasn't flagged", Spot.FLAG, myMap.getPos(spot.rowCoord, spot.colCoord).type);
 				
 			}
-		} else if (flaggedSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount && unexploredSpots.size() > 0) {
+		} else if (flaggedSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount && unexploredSpots.size() > 0 && myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount != 0) {
 			System.out.println("Already Flagged, pick al the spots around it (flagged spots: " + flaggedSpots.size() + " , near mine count: " + myMap.getPos(0,0).nearMineCount+")");
 			pickAllOnList(myMap, unexploredSpots);//pick all unexplored spots if not equal 0
 			
@@ -128,6 +97,29 @@ public class TestForSpotIteration {
 	
 	
 	
+	public CoordinatesForSpot doFullAreaRandomPick(MineMap theMapToSolve) {
+		List<CoordinatesForSpot> fullListOfUnexplored = new ArrayList<CoordinatesForSpot>();
+		for (int cc = 0; cc < theMapToSolve.cols; cc++) {
+			for (int rc = 0; rc < theMapToSolve.rows; rc++) {
+				ExploredSpot aSpot = theMapToSolve.getPos(rc, cc);
+				if (Spot.UNEXPLORED.equals(aSpot.type)) {
+					fullListOfUnexplored.add(new CoordinatesForSpot(rc, cc));
+				}
+			}
+		}
+		
+		if (fullListOfUnexplored.size() == 0)
+			return null;
+		
+		Collections.shuffle(fullListOfUnexplored);
+		CoordinatesForSpot whatToPick = fullListOfUnexplored.get(0);
+		theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
+		return whatToPick;
+	}
+	
+	
+	
+	
 	public static void pickAllOnList(MineMap theMapToSolve, List<CoordinatesForSpot> theListofAreasToPickFrom) {
 		for (CoordinatesForSpot whatToPick : theListofAreasToPickFrom) {
 			theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
@@ -140,41 +132,5 @@ public class TestForSpotIteration {
 			
 		}
 	}
-	
-	
-	
-	public void doFullAreaRandomPick(MineMap theMapToSolve) {
-		List<CoordinatesForSpot> fullListOfUnexplored = new ArrayList<CoordinatesForSpot>();
-		for (int cc = 0; cc < theMapToSolve.cols; cc++) {
-			for (int rc = 0; rc < theMapToSolve.rows; rc++) {
-				ExploredSpot aSpot = theMapToSolve.getPos(rc, cc);
-				if (Spot.UNEXPLORED.equals(aSpot.type)) {
-					fullListOfUnexplored.add(new CoordinatesForSpot(rc, cc));
-				}
-			}
-		}
-		
-		if (fullListOfUnexplored.size() == 0)
-			return;
-		Collections.shuffle(fullListOfUnexplored);
-		CoordinatesForSpot whatToPick = fullListOfUnexplored.get(0);
-		theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
-	}
-	
-	
-	
-	public List<CoordinatesForSpot> searchNearMineCount(MineMap aMap, int nearMineCount) {
-		List<CoordinatesForSpot> fullList = new ArrayList<CoordinatesForSpot>();
-		for (int cc = 0; cc < aMap.cols; cc++) {
-			for (int rc = 0; rc < aMap.rows; rc++) {
-				ExploredSpot aSpot = aMap.getPos(rc, cc);
-				if (Spot.SAFE.equals(aSpot.type)) {
-					if (aSpot.nearMineCount == nearMineCount) {
-						fullList.add(new CoordinatesForSpot(rc, cc));
-					}
-				}
-			}
-		}
-		return fullList;
-	}
+
 }
