@@ -27,38 +27,21 @@ public class TestForSpotIteration {
 		//Pick a spot at random
 		//doFullAreaRandomPick(theMapToSolve);
 		
-		MineMap myMap = new MineMap(15, 15, 0.12, 0); //"Piece of cake", "Easy", "Medium", "Hard", "Pro", "Insane", Starting at 0.04 and adding 0.04
+		MineMap myMap = new MineMap(15, 15, 0.08, 0); //"Piece of cake", "Easy", "Medium", "Hard", "Pro", "Insane", Starting at 0.04 and adding 0.04
 		doFullAreaRandomPick(myMap);
 		
 		int count = 0;
 		for(int i = 1; i < 9; i++) {
-			int nearMine = i;
-			boolean spotPicked = false;
+			
 			List<CoordinatesForSpot> sameNearMineCountSpots = searchNearMineCount(myMap, i);
+			
 			if(sameNearMineCountSpots.isEmpty()) {
 				if (i == 8) {
 					i = 0;
 					doFullAreaRandomPick(myMap);
-					spotPicked =true;
 					
 				}
-			} else {
-				count +=1;
-				//NOT EMPTY
-				
 			}
-			
-			System.out.print("\n-NEAR MINE COUNT " + nearMine + ": " );
-			for(CoordinatesForSpot spot : sameNearMineCountSpots) {
-				System.out.print("(" + spot.rowCoord + ", " + spot.colCoord +"), ");
-				//SEARCH AROUND SPOT
-				
-				searchAroundCentre(myMap, spot);
-				
-			}
-		
-			if (spotPicked)
-				System.out.println("\n\nSpot picked");
 			
 			if(myMap.isWon())
 				System.out.println("\nYOU WON!!!!");
@@ -66,9 +49,6 @@ public class TestForSpotIteration {
 			if(myMap.isEnded())
 				return;
 			
-			
-			//allOnes.isEmpty()
-			//Collections.shuffle(allOnes);
 			
 		}
 		
@@ -104,7 +84,7 @@ public class TestForSpotIteration {
 			FinalAreaFlagger.flagSpots(myMap, unexploredSpots); //flag the unexplored spots
 			
 			for (CoordinatesForSpot spot : unexploredSpots) {
-				assertEquals("(" + spot.rowCoord +", "+ spot.colCoord+") " +"wasn't flagged", Spot.FLAG, myMap.getPos(spot.rowCoord, spot.colCoord).type);
+				assertEquals("(" + spot.rowCoord + ", " + spot.colCoord + ") " + "wasn't flagged", Spot.FLAG, myMap.getPos(spot.rowCoord, spot.colCoord).type);
 				
 			}
 		} else if (flaggedSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount && unexploredSpots.size() > 0) {
@@ -131,13 +111,6 @@ public class TestForSpotIteration {
 	public static void pickAllOnList(MineMap theMapToSolve, List<CoordinatesForSpot> theListofAreasToPickFrom) {
 		for (CoordinatesForSpot whatToPick : theListofAreasToPickFrom) {
 			theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
-			
-			if(theMapToSolve.isEnded()) {
-				System.out.println("Spot was a bomb");
-			} else {
-				System.out.println("Spot picked correctly");
-			}
-			
 		}
 	}
 	
@@ -159,11 +132,13 @@ public class TestForSpotIteration {
 		Collections.shuffle(fullListOfUnexplored);
 		CoordinatesForSpot whatToPick = fullListOfUnexplored.get(0);
 		theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
+		System.out.println("RANDOM SPOT PICKED");
 	}
 	
 	
 	
 	public List<CoordinatesForSpot> searchNearMineCount(MineMap aMap, int nearMineCount) {
+		System.out.println("\n-NEAR MINE COUNT " + nearMineCount + ": " );
 		List<CoordinatesForSpot> fullList = new ArrayList<CoordinatesForSpot>();
 		for (int cc = 0; cc < aMap.cols; cc++) {
 			for (int rc = 0; rc < aMap.rows; rc++) {
@@ -171,6 +146,10 @@ public class TestForSpotIteration {
 				if (Spot.SAFE.equals(aSpot.type)) {
 					if (aSpot.nearMineCount == nearMineCount) {
 						fullList.add(new CoordinatesForSpot(rc, cc));
+						//PRINT SPOT
+						System.out.print("(" + rc + ", " + cc +"): ");
+						//SEARCH AROUND SPOT AND TAKE ACTIONS
+						searchAroundCentre(aMap, new CoordinatesForSpot(rc, cc));
 					}
 				}
 			}
