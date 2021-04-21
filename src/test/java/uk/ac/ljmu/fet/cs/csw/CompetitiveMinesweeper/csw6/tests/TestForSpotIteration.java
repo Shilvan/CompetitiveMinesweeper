@@ -22,19 +22,25 @@ import uk.ac.ljmu.fet.cs.csw.CompetitiveMinesweeper.base.solvers.onepriority.Coo
 
 public class TestForSpotIteration {
 	public boolean actionTaken = false;
-	
+	CoordinatesForSpot spotToPickWithUncertainty = null;
+	float originalProbability = 1;
 	@Test(timeout = 150)
 	public void testIteratedCompleteList() {
 		
 		//Create map
-		MineMap myMap = new MineMap(15, 15, 0.04, 0); //"Piece of cake", "Easy", "Medium", "Hard", "Pro", "Insane", Starting at 0.04 and adding 0.04
-		
+		MineMap myMap = new MineMap(15, 15, 0.16, 0); //"Piece of cake", "Easy", "Medium", "Hard", "Pro", "Insane", Starting at 0.04 and adding 0.04
 		
 		//Iterate while the game is not ended
 		mainLoop: do {
 			
 			//Pick a spot at random to start
-			doFullAreaRandomPick(myMap);
+			if (originalProbability <= 0.5) {
+				myMap.pickASpot(spotToPickWithUncertainty.rowCoord, spotToPickWithUncertainty.colCoord);
+				System.out.println("\n>>>>>>SPOT PICKED USING PROBABILITY " + originalProbability + " spot: (" + spotToPickWithUncertainty.rowCoord + "," + spotToPickWithUncertainty.colCoord +")");
+				spotToPickWithUncertainty = null;
+			} else {
+				doFullAreaRandomPick(myMap);
+			}
 			
 			
 			if(myMap.isEnded())
@@ -132,6 +138,29 @@ public class TestForSpotIteration {
 				
 			} else {
 				System.out.println("No action taken");
+				
+				
+				//If there's no action taken after looping through 1-8 nearMineCount pick 'spotToPickWithUncertainty' instead of a random spot with 
+				if(spotToPickWithUncertainty == null) {
+					Collections.shuffle(unexploredSpots);
+					spotToPickWithUncertainty = unexploredSpots.get(0);
+					originalProbability = ((float) myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) / unexploredSpots.size();	
+					System.out.println("*Probability: "+ originalProbability +", nearMine: " + myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount + ", size: " + unexploredSpots.size());
+					
+				} else {
+					
+					float newProbability = ((float) myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) / unexploredSpots.size();
+				
+					System.out.println("*Probability: "+ newProbability +", nearMine: " + myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount + ", size: " + unexploredSpots.size());
+					
+					if (newProbability < originalProbability) {
+						Collections.shuffle(unexploredSpots);
+						spotToPickWithUncertainty  = unexploredSpots.get(0);
+						originalProbability = newProbability;
+					}
+					
+					
+				}
 			}
 			
 		} else {
@@ -167,7 +196,7 @@ public class TestForSpotIteration {
 		Collections.shuffle(fullListOfUnexplored);
 		CoordinatesForSpot whatToPick = fullListOfUnexplored.get(0);
 		theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
-		System.out.println("\nRANDOM SPOT PICKED");
+		System.out.println("\n>>>>>>RANDOM SPOT PICKED");
 	}
 	
 	
