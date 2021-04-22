@@ -23,8 +23,7 @@ public class CSW6Solver extends AbstractSolver {
 	 *instead of picking a spot at random
 	 */
 	CoordinatesForSpot spotToPickWithUncertainty = null;
-	//The probability of that spot being a mine
-	float originalProbability = 1;
+	float originalProbability = 1; //The probability of that spot being a mine
 	
 	/**
 	 * The algorithm starts with a point at random and then iterate through all the spots 
@@ -90,21 +89,20 @@ public class CSW6Solver extends AbstractSolver {
 		return;
 	}
 	
-	
-
-
-
-	
-	public void searchAroundCentre(MineMap myMap, CoordinatesForSpot centre) {
-		
+	/**
+	 * Explores the area around a centre spot and gives the list of unexplored and flagged spots around it to take actions on.
+	 * @param aMap The map where the exploration should happen.
+	 * @param centre The spot on the map that we have to find the spots that surrounds it.
+	 */
+	public void searchAroundCentre(MineMap aMap, CoordinatesForSpot centre) {
 		ArrayList<CoordinatesForSpot> unexploredSpots = new ArrayList<>();
 		ArrayList<CoordinatesForSpot> flaggedSpots = new ArrayList<>();
-		
-		
+		//Loop through all the spots around a centre spot
 		for (int cc = centre.colCoord - 1; cc < centre.colCoord + 2; cc++) {
 			for (int rc = centre.rowCoord - 1; rc < centre.rowCoord + 2; rc++) {
-				if (!myMap.checkOutOfRange(rc, cc)) {
-					ExploredSpot aSpot = myMap.getPos(rc, cc);
+				if (!aMap.checkOutOfRange(rc, cc)) {
+					ExploredSpot aSpot = aMap.getPos(rc, cc);
+					//Add the spot to the respective list depending on its type
 					switch(aSpot.type) {
 						case UNEXPLORED:
 							unexploredSpots.add(new CoordinatesForSpot(rc, cc));
@@ -113,69 +111,58 @@ public class CSW6Solver extends AbstractSolver {
 							flaggedSpots.add(new CoordinatesForSpot(rc, cc));
 							break;
 					}
-					
 				}
 			}
 		}
 		
-		
-		
+		//If there are no unexplored spots, there is no action to be taken
 		if (unexploredSpots.size() > 0) {
-			if (flaggedSpots.size() + unexploredSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) {
+			//If there's i spot(s) to complete the nearMineCount flag the unexplored spots
+			if (flaggedSpots.size() + unexploredSpots.size() == aMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) {
 				System.out.println("Complete flagging of the area around a spot (flagged spots: " + flaggedSpots.size() + ", spots to flag: " + unexploredSpots.size() + ")" );
-				flagSpots(myMap, unexploredSpots); //flag the unexplored spots
-				
-				if(myMap.isWon()) {
-					System.out.println("\nYOU WON!!!!");
-				} else { 
-					if (myMap.isEnded()) {
-						System.out.println("\nYOU LOST!!!!");
-					}
-				}
-				actionTaken = true;
-				
-			} else if (flaggedSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) {
+				flagSpots(aMap, unexploredSpots);
+				actionTaken = true;//An action has been taken, update the attribute
+			} 
+			//If flagging has been complete, pick all the rest of unexplored spots around the centre
+			else if (flaggedSpots.size() == aMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) {
 				System.out.println("Already Flagged, pick all the spots around it (flagged spots: " + flaggedSpots.size() + ")");
-				pickSpots(myMap, unexploredSpots);//pick all unexplored spots if not equal 0
-				actionTaken = true;
-				
-			} else {
+				pickSpots(aMap, unexploredSpots);
+				actionTaken = true;//An action has been taken, update the attribute
+			} 
+			//There's not enough data to take an action
+			else {
 				System.out.println("No action taken");
-				
-				
-				//If there's no action taken after looping through 1-8 nearMineCount pick 'spotToPickWithUncertainty' instead of a random spot with 
+				//Set 'spotToPickWithUncertainty' if one has not been set yet, or set a new one with lower probability of being a mine
 				if(spotToPickWithUncertainty == null) {
 					Collections.shuffle(unexploredSpots);
 					spotToPickWithUncertainty = unexploredSpots.get(0);
-					originalProbability = ((float) myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) / unexploredSpots.size();	
-					System.out.println("*Probability: "+ originalProbability +", nearMine: " + myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount + ", size: " + unexploredSpots.size());
+					
+					//Calculate the probability of it being a mine
+					originalProbability = ((float) aMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) / unexploredSpots.size();	
+					System.out.println("*Probability: "+ originalProbability +", nearMine: " + aMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount + ", size: " + unexploredSpots.size());
 					
 				} else {
-					
-					float newProbability = ((float) myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) / unexploredSpots.size();
+					//Set new spot if probability is lower
+					float newProbability = ((float) aMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) / unexploredSpots.size();
+					System.out.println("*Probability: "+ newProbability +", nearMine: " + aMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount + ", size: " + unexploredSpots.size());
 				
-					System.out.println("*Probability: "+ newProbability +", nearMine: " + myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount + ", size: " + unexploredSpots.size());
-					
 					if (newProbability < originalProbability) {
 						Collections.shuffle(unexploredSpots);
 						spotToPickWithUncertainty  = unexploredSpots.get(0);
 						originalProbability = newProbability;
 					}
 					
-					
 				}
 			}
 			
-		} else {
+		} 
+		//If there's no unexplored spots, there's no action to be taken
+		else {
 			System.out.println("No action taken");
 		}
 		
 		
-		return;
-		
-		
 	}
-	
 	
 	/**
 	 * Flags all spots handed over as a list.
@@ -201,7 +188,7 @@ public class CSW6Solver extends AbstractSolver {
 	
 	/**
 	 * Searches the map for unexplored spots and picks one randomly.
-	 * @param aMap the map to explore and pick on
+	 * @param aMap The map to explore and pick on
 	 */
 	public void pickAtRandom(MineMap aMap) {
 		List<CoordinatesForSpot> fullListOfUnexplored = new ArrayList<CoordinatesForSpot>();
