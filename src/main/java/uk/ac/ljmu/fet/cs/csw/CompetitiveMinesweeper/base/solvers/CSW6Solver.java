@@ -44,7 +44,7 @@ public class CSW6Solver extends AbstractSolver {
 				System.out.println("\n>>>>>>SPOT PICKED USING PROBABILITY " + originalProbability + " spot: (" + spotToPickWithUncertainty.rowCoord + "," + spotToPickWithUncertainty.colCoord +")");
 				spotToPickWithUncertainty = null;
 			} else {
-				doFullAreaRandomPick(myMap);
+				pickAtRandom(myMap);
 			}
 			
 			//exit loop if the spot picked was a mine
@@ -89,7 +89,6 @@ public class CSW6Solver extends AbstractSolver {
 		
 		return;
 	}
-	
 	
 	
 
@@ -137,7 +136,7 @@ public class CSW6Solver extends AbstractSolver {
 				
 			} else if (flaggedSpots.size() == myMap.getPos(centre.rowCoord, centre.colCoord).nearMineCount) {
 				System.out.println("Already Flagged, pick all the spots around it (flagged spots: " + flaggedSpots.size() + ")");
-				pickAllOnList(myMap, unexploredSpots);//pick all unexplored spots if not equal 0
+				pickSpots(myMap, unexploredSpots);//pick all unexplored spots if not equal 0
 				actionTaken = true;
 				
 			} else {
@@ -178,37 +177,47 @@ public class CSW6Solver extends AbstractSolver {
 	}
 	
 	
-	
-	public void pickAllOnList(MineMap theMapToSolve, List<CoordinatesForSpot> theListofAreasToPickFrom) {
-		for (CoordinatesForSpot whatToPick : theListofAreasToPickFrom) {
-			theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
+	/**
+	 * Flags all spots handed over as a list.
+	 * @param aMap The map where we have to pick the spots.
+	 * @param spotsToPick The list of spots to pick.
+	 */
+	public void pickSpots(MineMap aMap, List<CoordinatesForSpot> spotsToPick) {
+		for (CoordinatesForSpot whatToPick : spotsToPick) {
+			aMap.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
 		}
 	}
 	
-	
-	public void flagSpots(MineMap myMap, List<CoordinatesForSpot> spotsToFlag) {
+	/**
+	 * Flags all spots handed over as a list.
+	 * @param aMap The map where we have to flag the spots.
+	 * @param spotsToFlag The list of spots to flag.
+	 */
+	public void flagSpots(MineMap aMap, List<CoordinatesForSpot> spotsToFlag) {
 		for(CoordinatesForSpot spot : spotsToFlag) {		
-			myMap.flagASpot(spot.rowCoord, spot.colCoord);
+			aMap.flagASpot(spot.rowCoord, spot.colCoord);
 		}
 	}
 	
-	
-	public void doFullAreaRandomPick(MineMap theMapToSolve) {
+	/**
+	 * Searches the map for unexplored spots and picks one randomly.
+	 * @param aMap the map to explore and pick on
+	 */
+	public void pickAtRandom(MineMap aMap) {
 		List<CoordinatesForSpot> fullListOfUnexplored = new ArrayList<CoordinatesForSpot>();
-		for (int cc = 0; cc < theMapToSolve.cols; cc++) {
-			for (int rc = 0; rc < theMapToSolve.rows; rc++) {
-				ExploredSpot aSpot = theMapToSolve.getPos(rc, cc);
+		for (int cc = 0; cc < aMap.cols; cc++) {
+			for (int rc = 0; rc < aMap.rows; rc++) {
+				ExploredSpot aSpot = aMap.getPos(rc, cc);
 				if (Spot.UNEXPLORED.equals(aSpot.type)) {
 					fullListOfUnexplored.add(new CoordinatesForSpot(rc, cc));
 				}
 			}
 		}
-		
 		if (fullListOfUnexplored.size() == 0)
 			return;
 		Collections.shuffle(fullListOfUnexplored);
 		CoordinatesForSpot whatToPick = fullListOfUnexplored.get(0);
-		theMapToSolve.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
+		aMap.pickASpot(whatToPick.rowCoord, whatToPick.colCoord);
 		System.out.println("\n>>>>>>RANDOM SPOT PICKED");
 	}
 	
