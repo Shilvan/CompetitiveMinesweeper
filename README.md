@@ -57,6 +57,7 @@ If the game completes (because of the player exploding or completely exploring t
 
 ### How to add a new AI solver
 * Extend the class AbstractSolver.
+* CompetitiveMinesweeper/src/main/java/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/solvers/CSW6Solver.java
 * Make sure to create a run() method that attempts to solve the given [MineMap](https://kecskemeti.github.io/CompetitiveMinesweeper/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/MineMap.html). 
 * When the game is running, this method will be run in its own thread and the GUI will visualise the game while your AI tries to solve the MineMap. The GUI assumes your AI will eventually make the MineMap pronouncing the end of the game (i.e., the [isEnded method](https://kecskemeti.github.io/CompetitiveMinesweeper/uk/ac/ljmu/fet/cs/csw/CompetitiveMinesweeper/base/MineMap.html#isEnded()) should eventually return true. If this is not the case please rework your AI. 
 * You are recommended to check out MineMap's api documentation for further details.
